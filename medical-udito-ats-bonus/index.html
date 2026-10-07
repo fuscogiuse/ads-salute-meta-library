@@ -2,10 +2,11 @@
 <html lang="it">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex">
   <title>Medical Udito Manerbio - ATS</title>
   <meta name="description" content="Potresti avere diritto a un contributo fino a 800€ per il tuo apparecchio acustico. Per tutto il mese, il test dell'udito è GRATUITO.">
+  <meta name="theme-color" content="#0b3a22">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="it_IT">
   <meta property="og:title" content="Medical Udito Manerbio - ATS">
@@ -13,279 +14,325 @@
   <meta property="og:url" content="https://fuscogiuse.github.io/ads-salute-meta-library/medical-udito-ats-bonus/">
   <meta property="og:image" content="https://fuscogiuse.github.io/ads-salute-meta-library/medical-udito-ats-bonus/img/hero.webp">
   <link rel="icon" href="img/logo.webp" type="image/webp">
+  <link rel="preload" href="fonts/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="img/hero.webp" as="image" type="image/webp" fetchpriority="high">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <p class="offer-bar">Per tutto il mese, il test dell'udito è GRATUITO</p>
+  <svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.2 6.5L12 17.3l-5.8 3.15 1.2-6.5L2.6 9.4l6.55-.85z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s-7-6.1-7-11.6a7 7 0 0 1 14 0c0 5.5-7 11.6-7 11.6z"/><circle cx="12" cy="9.8" r="2.6"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="5" rx="1.2"/><path d="M5 13v7.5h14V13M12 8v12.5M12 8c-1.5-3.8-6-4.4-6-1.8C6 8 9.5 8 12 8zm0 0c1.5-3.8 6-4.4 6-1.8C18 8 14.5 8 12 8z"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.5 11.6a8.3 8.3 0 0 1-12 7.4L3.5 20.5l1.5-4.6a8.3 8.3 0 1 1 15.5-4.3z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20.5A7 7 0 0 1 4 13.5c0-6.2 6-9.5 16.5-9.5 0 10.4-3.2 16.5-9.5 16.5z"/><path d="M3.5 21c3.6-4.3 7-6.8 11.5-9"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2.8l8 3v6.1c0 5-3.4 8.3-8 9.4-4.6-1.1-8-4.4-8-9.4V5.8z"/><path d="m8.8 12.1 2.2 2.2 4.3-4.4"/></symbol>
+    <symbol id="i-tv" viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="19" height="12.5" rx="2.2"/><path d="m8 2.5 4 4 4-4M8 22h8"/></symbol>
+    <symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 12h2.5M6.5 8v8M10.5 4.5v15M14.5 8v8M18.5 10v4M21.5 12h.5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="m8.6 14.1-1.6 7.4 5-2.9 5 2.9-1.6-7.4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="9.5" cy="8" r="4"/><path d="M2.5 21a7 7 0 0 1 14 0M16 11.2l2 2 4-4"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M11 3l1.9 5.3L18 10.2l-5.1 1.9L11 17.5l-1.9-5.4L4 10.2l5.1-1.9zM18.5 15.5v5M16 18h5"/></symbol>
+    <symbol id="i-headset" viewBox="0 0 24 24"><path d="M4 14.5V12a8 8 0 0 1 16 0v2.5"/><rect x="2.5" y="14" width="5" height="6.5" rx="2"/><rect x="16.5" y="14" width="5" height="6.5" rx="2"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="2.2"/><path d="M22 10.5v3M10.5 9.5 8.5 12.5h3l-2 3"/></symbol>
+    <symbol id="i-bluetooth" viewBox="0 0 24 24"><path d="m6.5 7 11 10-5.5 5V2l5.5 5-11 10"/></symbol>
+    <symbol id="i-ear" viewBox="0 0 24 24"><path d="M6 9.5a6 6 0 1 1 12 0c0 4.2-4 5-4 9a3 3 0 0 1-5.6 1.5"/><path d="M9.5 9.5a2.5 2.5 0 1 1 5 0c0 1.4-1.2 2-1.7 2.9"/></symbol>
+    <symbol id="i-glasses" viewBox="0 0 24 24"><circle cx="6" cy="15" r="3.8"/><circle cx="18" cy="15" r="3.8"/><path d="M9.8 15a2.2 2.2 0 0 1 4.4 0M2.2 15V9.5L4.5 5M21.8 15V9.5L19.5 5"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></symbol>
+    <symbol id="i-form" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18.5" rx="2.5"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+  </svg>
+
+  <a class="skip" href="#contenuto">Vai al contenuto</a>
+
+  <p class="offer-bar"><svg class="i" aria-hidden="true"><use href="#i-gift"/></svg><span>Per tutto il mese, il test dell'udito è <strong>GRATUITO</strong></span></p>
 
   <header class="site-header">
-    <div class="wrap">
-      <img class="logo" src="img/logo.webp" width="960" height="280" alt="Medical Udito">
-      <a class="btn header-cta" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">PRENOTA IL TUO TEST</a>
+    <div class="wrap header-row">
+      <a class="brand" href="./" aria-label="Medical Udito, specialisti in ascolto">
+        <img src="img/logo.webp" width="960" height="280" alt="Medical Udito – specialisti in ascolto">
+      </a>
+      <a class="btn btn-primary btn-sm header-cta" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">
+        <span class="label-short">Prenota</span><span class="label-long">Prenota il tuo test</span>
+        <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+      </a>
     </div>
   </header>
 
-  <main>
-    <section class="hero">
+  <main id="contenuto">
+    <section class="hero" aria-labelledby="hero-title">
       <div class="wrap hero-grid">
-        <div>
-          <div class="stars-row">
-            <img src="img/stelle.webp" width="465" height="90" alt="Cinque stelle">
+        <div class="hero-copy">
+          <p class="trust">
+            <span class="stars" role="img" aria-label="5 stelle su 5">
+              <svg class="i" aria-hidden="true"><use href="#i-star"/></svg><svg class="i" aria-hidden="true"><use href="#i-star"/></svg><svg class="i" aria-hidden="true"><use href="#i-star"/></svg><svg class="i" aria-hidden="true"><use href="#i-star"/></svg><svg class="i" aria-hidden="true"><use href="#i-star"/></svg>
+            </span>
             <span>+200 Recensioni Positive</span>
-          </div>
-          <h1>BONUS ATS PER APPARECCHI ACUSTICI</h1>
-          <p class="lead">Prenditi cura del tuo udito!</p>
-          <p class="benefit">Potresti avere diritto a un contributo fino a 800€ per il tuo apparecchio acustico</p>
-          <p class="section-cta cta-left">
-            <a class="btn" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">PRENOTA IL TUO APPUNTAMENTO GRATUITO</a>
           </p>
-          <p class="support">Scopri se puoi ottenere un contributo fino a 800€ per il tuo apparecchio acustico. Verifichiamo insieme se puoi accedere al Bonus per gli apparecchi acustici e ti spieghiamo come ottenere il dispositivo più adatto alle tue esigenze.</p>
-          <p class="locations-line">Riceviamo presso i nostri studi di Brescia, Breno, Castiglione, Chiari, Gardone e Manerbio</p>
-        </div>
-        <img class="hero-photo" src="img/hero.webp" width="561" height="729" alt="Persona con apparecchio acustico">
-      </div>
-    </section>
+          <p class="eyebrow">Prenditi cura del tuo udito!</p>
+          <h1 id="hero-title">Bonus ATS per apparecchi acustici</h1>
 
-    <section>
-      <div class="wrap">
-        <div class="steps">
-          <p class="step">VERIFICA DEI REQUISITI</p>
-          <p class="step">CONSULENZA PERSONALIZZATA</p>
-          <p class="step">NESSUN IMPEGNO</p>
-        </div>
-        <p class="section-cta">
-          <a class="btn" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">PRENOTA IL TUO TEST GRATUITO</a>
-        </p>
-      </div>
-    </section>
+          <div class="bonus">
+            <p class="bonus-pre">Potresti avere diritto a un contributo</p>
+            <p class="bonus-amount"><span class="bonus-upto">fino a</span><strong>800€</strong></p>
+            <p class="bonus-post">per il tuo apparecchio acustico</p>
+            <svg class="bonus-rings" viewBox="0 0 200 200" aria-hidden="true"><circle cx="200" cy="100" r="40"/><circle cx="200" cy="100" r="70"/><circle cx="200" cy="100" r="100"/><circle cx="200" cy="100" r="130"/></svg>
+          </div>
 
-    <section class="form-section" id="modulo">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>COMPILA IL MODULO PER RICHIEDERE IL TUO APPUNTAMENTO GRATUITO</h2>
-          <p>COMPILA IL MODULO</p>
-        </div>
-        <div class="form-layout split">
-          <form action="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248" method="get">
-            <label>NOME E COGNOME *
-              <input type="text" placeholder="Nome e cognome" autocomplete="name">
-            </label>
-            <label>NUMERO DI TELEFONO *
-              <input type="tel" placeholder="Telefono" autocomplete="tel" inputmode="tel" pattern="^\+?( ?[\(]?[\-]?[0-9][\)]?){6,13}$">
-            </label>
-            <label>Seleziona lo studio *
-              <select>
-                <option value="">seleziona lo studio</option>
-                <option>Brescia</option>
-                <option>Breno</option>
-                <option>Castiglione</option>
-                <option>Chiari</option>
-                <option>Gardone</option>
-                <option>Manerbio</option>
-              </select>
-            </label>
-            <label class="check">
-              <input type="checkbox">
-              <span>Acconsento al trattamento dati e all'<a href="https://www.centopercentoterapista.it/privacy-policy/" title="Informativa Privacy">Informativa Privacy</a> per ottenere il trattamento.</span>
-            </label>
-            <button class="btn btn-block" type="submit">INVIA</button>
-          </form>
-          <img src="img/staff.webp" width="1000" height="750" alt="Professionista Medical Udito durante un controllo" loading="lazy">
-        </div>
-      </div>
-    </section>
+          <a class="btn btn-primary btn-lg btn-block-m" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">
+            Prenota il tuo appuntamento gratuito
+            <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
 
-    <section>
-      <div class="wrap split">
-        <div>
-          <h2>LA VISITA COMPRENDE:</h2>
-          <ul class="checklist">
-            <li>Analisi sui problemi di comunicazione e di comprensione nella vita quotidiana</li>
-            <li>Video-otoscopia del condotto uditivo e del timpano</li>
-            <li>Test audiometrico completo tonale e vocale</li>
-            <li>Valutazione della soluzione migliore per il singolo caso specifico</li>
-            <li>Test immediato</li>
+          <ul class="hero-points">
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Verifica dei requisiti</li>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Consulenza personalizzata</li>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Nessun impegno</li>
           </ul>
-          <p class="section-cta cta-left">
-            <a class="btn" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">PRENOTA IL TUO TEST GRATUITO</a>
-          </p>
         </div>
-        <img src="img/controllo.webp" width="1000" height="740" alt="Controllo dell'udito in studio" loading="lazy">
+
+        <figure class="hero-media">
+          <img src="img/hero.webp" width="561" height="729" fetchpriority="high" decoding="async" alt="Un'audioprotesista Medical Udito accoglie due pazienti alla scrivania dello studio">
+          <figcaption class="hero-caption">
+            <svg class="i" aria-hidden="true"><use href="#i-pin"/></svg>
+            <span>Riceviamo presso i nostri studi di Brescia, Breno, Castiglione, Chiari, Gardone e Manerbio</span>
+          </figcaption>
+        </figure>
       </div>
     </section>
 
-    <section class="band">
-      <div class="wrap split">
-        <div>
-          <h2>MEDICAL UDITO</h2>
-          <p style="margin-top:12px">Esperti dell'udito al tuo fianco</p>
-          <p>Da oltre 30 anni ci dedichiamo con passione e competenza a migliorare la qualità della vita dei nostri pazienti</p>
-          <p class="section-cta cta-left">
-            <a class="btn btn-light" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">PRENOTA IL TUO TEST GRATUITAMENTE</a>
-          </p>
+    <section class="section" aria-labelledby="visita-title">
+      <div class="wrap visit">
+        <div class="visit-head">
+          <p class="kicker">Il test gratuito</p>
+          <h2 id="visita-title">La visita comprende:</h2>
+          <p class="intro">Scopri se puoi ottenere un contributo fino a 800€ per il tuo apparecchio acustico. Verifichiamo insieme se puoi accedere al Bonus per gli apparecchi acustici e ti spieghiamo come ottenere il dispositivo più adatto alle tue esigenze.</p>
         </div>
-        <img src="img/apparecchio.webp" width="900" height="1020" alt="Apparecchio acustico" loading="lazy">
+        <figure class="media visit-media">
+          <img src="img/staff.webp" width="1000" height="750" loading="lazy" decoding="async" alt="Studio Medical Udito attrezzato con audiometro e cabina per il test dell'udito">
+        </figure>
+        <ol class="timeline">
+            <li><span class="num" aria-hidden="true">01</span><span>Analisi sui problemi di comunicazione e di comprensione nella vita quotidiana</span></li>
+            <li><span class="num" aria-hidden="true">02</span><span>Video-otoscopia del condotto uditivo e del timpano</span></li>
+            <li><span class="num" aria-hidden="true">03</span><span>Test audiometrico completo tonale e vocale</span></li>
+            <li><span class="num" aria-hidden="true">04</span><span>Valutazione della soluzione migliore per il singolo caso specifico</span></li>
+            <li><span class="num" aria-hidden="true">05</span><span>Test immediato</span></li>
+        </ol>
+        <div class="visit-cta">
+          <a class="btn btn-primary btn-block-m" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">
+            Prenota il tuo test gratuito
+            <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
       </div>
     </section>
 
-    <section>
+    <section class="section section-tint" aria-labelledby="aiuto-title">
       <div class="wrap">
         <div class="section-head">
-          <h2>DICONO DI NOI</h2>
-          <div class="reviews-intro">
-            <span>+200 Recensioni Positive Verificate su</span>
-            <img src="img/google-recensioni.webp" width="640" height="259" alt="Google" loading="lazy">
-          </div>
-          <img src="img/stelle.webp" width="465" height="90" alt="Cinque stelle" loading="lazy">
+          <p class="kicker">I benefici</p>
+          <h2 id="aiuto-title">Siamo in grado di aiutarti a:</h2>
         </div>
-        <div class="review-grid">
-          <figure class="review"><img src="img/recensione-1.webp" width="640" height="318" alt="Schermata di una recensione pubblicata sul sito Medical Udito" loading="lazy"></figure>
-          <figure class="review"><img src="img/recensione-2.webp" width="640" height="168" alt="Schermata di una recensione pubblicata sul sito Medical Udito" loading="lazy"></figure>
-          <figure class="review"><img src="img/recensione-3.webp" width="640" height="194" alt="Schermata di una recensione pubblicata sul sito Medical Udito" loading="lazy"></figure>
-          <figure class="review"><img src="img/recensione-4.webp" width="640" height="214" alt="Schermata di una recensione pubblicata sul sito Medical Udito" loading="lazy"></figure>
-          <figure class="review"><img src="img/recensione-5.webp" width="640" height="224" alt="Schermata di una recensione pubblicata sul sito Medical Udito" loading="lazy"></figure>
-        </div>
-        <p class="section-cta">
-          <a class="btn" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">RICHIEDI IL TUO TEST</a>
-        </p>
-      </div>
-    </section>
-
-    <section>
-      <div class="wrap">
-        <h2>SIAMO IN GRADO DI AIUTARTI A:</h2>
-        <div class="split" style="margin-top:18px">
-          <ul class="checklist">
-            <li>Sentire meglio le conversazioni</li>
-            <li>Ridurre lo sforzo e la stanchezza</li>
-            <li>Tornare a comunicare con sicurezza</li>
-            <li>Guardare la TV e parlare al telefono</li>
-            <li>Gestire fischi o ronzii (acufeni)</li>
-            <li>… e molto altro</li>
+        <div class="benefits-layout">
+          <ul class="benefits">
+            <li><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-chat"/></svg></span>Sentire meglio le conversazioni</li>
+            <li><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span>Ridurre lo sforzo e la stanchezza</li>
+            <li><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg></span>Tornare a comunicare con sicurezza</li>
+            <li><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-tv"/></svg></span>Guardare la TV e parlare al telefono</li>
+            <li><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-wave"/></svg></span>Gestire fischi o ronzii (acufeni)</li>
+            <li><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span>… e molto altro</li>
           </ul>
-          <div class="photo-grid">
-            <img src="img/studio.webp" width="1000" height="750" alt="Studio Medical Udito" loading="lazy">
-          </div>
+          <figure class="media">
+            <img src="img/studio.webp" width="1000" height="750" loading="lazy" decoding="async" alt="Sala d'attesa luminosa di uno studio Medical Udito">
+          </figure>
         </div>
-        <p class="section-cta">
-          <a class="btn" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">PRENOTA IL TUO TEST GRATUITAMENTE</a>
-        </p>
+        <div class="section-cta">
+          <a class="btn btn-primary btn-block-m" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">
+            Prenota il tuo test gratuitamente
+            <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
       </div>
     </section>
 
-    <section class="band">
+    <section class="section section-dark" aria-labelledby="chi-title">
       <div class="wrap">
-        <h2>PERCHÈ SCEGLIERE MEDICAL UDITO?</h2>
-        <div class="why-grid" style="margin-top:18px">
-          <p class="why-card">ESPERIENZA CONSOLIDATA NEL SETTORE</p>
-          <p class="why-card">PROFESSIONISTI QUALIFICATI AL TUO SERVIZIO</p>
-          <p class="why-card">SOLUZIONI SU MISURA PER OGNI PAZIENTE</p>
-          <p class="why-card">TECNOLOGIA MODERA E DISCRETA</p>
-          <p class="why-card">ASSISTENZA CONTINUA NEL TEMPO</p>
-          <p class="why-card">TRASPARENZA E CHIAREZZA IN OGNI FASE</p>
+        <div class="split about">
+          <div class="split-copy">
+            <p class="kicker kicker-light">Medical Udito</p>
+            <h2 id="chi-title">Esperti dell'udito al tuo fianco</h2>
+            <p class="intro">Da oltre 30 anni ci dedichiamo con passione e competenza a migliorare la qualità della vita dei nostri pazienti</p>
+          </div>
+          <figure class="media">
+            <img src="img/apparecchio.webp" width="900" height="1020" loading="lazy" decoding="async" alt="Audioprotesista Medical Udito al lavoro nel suo studio">
+          </figure>
         </div>
-        <p class="section-cta">
-          <a class="btn btn-light" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">PRENOTA IL TUO TEST</a>
-        </p>
+
+        <h3 class="why-title">Perchè scegliere Medical Udito?</h3>
+        <ul class="why">
+          <li><svg class="i" aria-hidden="true"><use href="#i-award"/></svg>Esperienza consolidata nel settore</li>
+          <li><svg class="i" aria-hidden="true"><use href="#i-user"/></svg>Professionisti qualificati al tuo servizio</li>
+          <li><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg>Soluzioni su misura per ogni paziente</li>
+          <li><svg class="i" aria-hidden="true"><use href="#i-sparkle"/></svg>Tecnologia modera e discreta</li>
+          <li><svg class="i" aria-hidden="true"><use href="#i-headset"/></svg>Assistenza continua nel tempo</li>
+          <li><svg class="i" aria-hidden="true"><use href="#i-eye"/></svg>Trasparenza e chiarezza in ogni fase</li>
+        </ul>
+        <div class="section-cta">
+          <a class="btn btn-light btn-block-m" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">
+            Prenota il tuo test
+            <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
       </div>
     </section>
 
-    <section>
+    <section class="section" aria-labelledby="soluzioni-title">
       <div class="wrap">
         <div class="section-head">
-          <h2>LE NOSTRE SOLUZIONI ACUSTICHE PENSATE PER TE</h2>
+          <p class="kicker">Tecnologia</p>
+          <h2 id="soluzioni-title">Le nostre soluzioni acustiche pensate per te</h2>
         </div>
-        <div class="solution-grid">
+        <div class="solutions">
           <article class="solution">
-            <img src="img/ricaricabili.webp" width="800" height="600" alt="Immagine della soluzione Ricaricabili" loading="lazy">
-            <div>
-              <h3>RICARICABILI</h3>
+            <img src="img/ricaricabili.webp" width="800" height="600" loading="lazy" decoding="async" alt="Apparecchio acustico ricaricabile estratto dalla sua custodia di ricarica">
+            <div class="solution-body">
+              <h3><span class="chip"><svg class="i" aria-hidden="true"><use href="#i-battery"/></svg></span>Ricaricabili</h3>
               <p>Niente più batterie da cambiare. Ricarica notturna per un'intera giornata di autonomia</p>
             </div>
           </article>
           <article class="solution">
-            <img src="img/connettivi.webp" width="900" height="762" alt="Immagine della soluzione Connettivi" loading="lazy">
-            <div>
-              <h3>CONNETTIVI</h3>
+            <img src="img/connettivi.webp" width="900" height="762" loading="lazy" decoding="async" alt="Coppia di apparecchi acustici retroauricolari connettivi">
+            <div class="solution-body">
+              <h3><span class="chip"><svg class="i" aria-hidden="true"><use href="#i-bluetooth"/></svg></span>Connettivi</h3>
               <p>Connessione Bluetooth a smartphone, TV e dispositivi audio per un'esperienza d'ascolto superiore.</p>
             </div>
           </article>
           <article class="solution">
-            <img src="img/invisibili.webp" width="551" height="526" alt="Immagine della soluzione Invisibili" loading="lazy">
-            <div>
-              <h3>INVISIBILI</h3>
+            <img src="img/invisibili.webp" width="551" height="526" loading="lazy" decoding="async" alt="Due apparecchi acustici invisibili endoauricolari su un piattino di legno">
+            <div class="solution-body">
+              <h3><span class="chip"><svg class="i" aria-hidden="true"><use href="#i-ear"/></svg></span>Invisibili</h3>
               <p>Design discreto e performante, praticamente invisibile all'occhio. Comfort e tecnologia avanzata</p>
             </div>
           </article>
           <article class="solution">
-            <img src="img/occhiale.webp" width="675" height="512" alt="Immagine della soluzione Ad occhiale" loading="lazy">
-            <div>
-              <h3>AD OCCHIALE</h3>
+            <img src="img/occhiale.webp" width="675" height="512" loading="lazy" decoding="async" alt="Occhiale con apparecchio acustico integrato">
+            <div class="solution-body">
+              <h3><span class="chip"><svg class="i" aria-hidden="true"><use href="#i-glasses"/></svg></span>Ad occhiale</h3>
               <p>Integrazione in un unico dispositivo, una soluzione comoda e versatile per perdite uditive lievi</p>
             </div>
           </article>
         </div>
-        <p class="section-cta">
-          <a class="btn" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">PRENOTA IL TUO APPUNTAMENTO GRATUITO</a>
-        </p>
+        <div class="section-cta">
+          <a class="btn btn-primary btn-block-m" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">
+            Prenota il tuo appuntamento gratuito
+            <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
       </div>
     </section>
 
-    <section>
+    <section class="section section-tint" aria-labelledby="recensioni-title">
       <div class="wrap">
         <div class="section-head">
-          <h2>DOVE CI TROVIAMO:</h2>
-          <p>Riceviamo presso i nostri studi di Brescia, Breno, Castiglione, Chiari, Gardone e Manerbio</p>
+          <p class="kicker">Recensioni</p>
+          <h2 id="recensioni-title">Dicono di noi</h2>
         </div>
-        <div class="place-grid">
-          <article class="place">
-            <p>Via San Polo, 209, Brescia</p>
-            <iframe title="Medical Udito, Via San Polo, 209, Brescia" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2795.8346743770426!2d10.251640799999999!3d45.513406599999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47819e0e55d90495%3A0xbb7e6d4b99287f41!2sMedical%20Udito!5e0!3m2!1sit!2sit!4v1778175410874!5m2!1sit!2sit"></iframe>
-          </article>
-          <article class="place">
-            <p>Piazza Vielmi, 3, Breno</p>
-            <iframe title="Medical Udito, Piazza Vielmi, 3, Breno" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2773.7376204343673!2d10.3007808!3d45.9565251!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4783cea06f1a9ddf%3A0xb93b6d767be19998!2sMedical%20Udito!5e0!3m2!1sit!2sit!4v1778175438221!5m2!1sit!2sit"></iframe>
-          </article>
-          <article class="place">
-            <p>Via Marta Tana, 2, Castiglione</p>
-            <iframe title="Medical Udito, Via Marta Tana, 2, Castiglione" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2801.93400839005!2d10.487321!3d45.390502!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4781be70d7416bef%3A0x33ddf4818264a9bb!2sMedical%20Udito!5e0!3m2!1sit!2sit!4v1778175495745!5m2!1sit!2sit"></iframe>
-          </article>
-          <article class="place">
-            <p>Via Gian Battista Rota, 2, Chiari</p>
-            <iframe title="Medical Udito, Via Gian Battista Rota, 2, Chiari" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2794.777626672756!2d9.931703700000002!3d45.5346803!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47816b8f682ffa59%3A0x564165d050683770!2sMedical%20Udito!5e0!3m2!1sit!2sit!4v1778175523742!5m2!1sit!2sit"></iframe>
-          </article>
-          <article class="place">
-            <p>Via Fabio Filzi, 11/M, Gardone</p>
-            <iframe title="Medical Udito, Via Fabio Filzi, 11/M, Gardone" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2787.281311578218!2d10.1859595!3d45.6853263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47817c12447d241b%3A0x8fe23aa0d7d2c39d!2sMedical%20Udito!5e0!3m2!1sit!2sit!4v1778175548510!5m2!1sit!2sit"></iframe>
-          </article>
-          <article class="place">
-            <p>Piazza Italia, 6, Manerbio (BS)</p>
-            <iframe title="Medical Udito, Piazza Italia, 6, Manerbio (BS)" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5607.406662473108!2d10.1418051!3d45.354800600000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x478109a05ce066e5%3A0xbb3af1971ee80752!2sMedical%20Udito!5e0!3m2!1sit!2sit!4v1767908060176!5m2!1sit!2sit"></iframe>
-          </article>
+        <div class="rating">
+          <img class="rating-logo" src="img/google-recensioni.webp" width="640" height="259" loading="lazy" decoding="async" alt="Google Reviews">
+          <div>
+            <span class="stars stars-lg" role="img" aria-label="5 stelle su 5">
+              <svg class="i" aria-hidden="true"><use href="#i-star"/></svg><svg class="i" aria-hidden="true"><use href="#i-star"/></svg><svg class="i" aria-hidden="true"><use href="#i-star"/></svg><svg class="i" aria-hidden="true"><use href="#i-star"/></svg><svg class="i" aria-hidden="true"><use href="#i-star"/></svg>
+            </span>
+            <p>+200 Recensioni Positive Verificate su Google</p>
+          </div>
         </div>
-        <p class="section-cta">
-          <a class="btn" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">PRENOTA IL TUO APPUNTAMENTO GRATUITO</a>
-        </p>
+        <div class="reviews">
+          <figure class="review"><img src="img/recensione-1.webp" width="640" height="318" loading="lazy" decoding="async" alt="Recensione Google a 5 stelle di Sonia Ventura su Medical Udito"></figure>
+          <figure class="review"><img src="img/recensione-2.webp" width="640" height="168" loading="lazy" decoding="async" alt="Recensione Google a 5 stelle su Medical Udito"></figure>
+          <figure class="review"><img src="img/recensione-3.webp" width="640" height="194" loading="lazy" decoding="async" alt="Recensione Google a 5 stelle su Medical Udito"></figure>
+          <figure class="review"><img src="img/recensione-4.webp" width="640" height="214" loading="lazy" decoding="async" alt="Recensione Google a 5 stelle su Medical Udito"></figure>
+          <figure class="review"><img src="img/recensione-5.webp" width="640" height="224" loading="lazy" decoding="async" alt="Recensione Google a 5 stelle su Medical Udito"></figure>
+        </div>
+        <div class="section-cta">
+          <a class="btn btn-primary btn-block-m" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">
+            Richiedi il tuo test
+            <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="dove-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker">I nostri studi</p>
+          <h2 id="dove-title">Dove ci troviamo:</h2>
+          <p class="intro">Riceviamo presso i nostri studi di Brescia, Breno, Castiglione, Chiari, Gardone e Manerbio</p>
+        </div>
+        <div class="places-layout">
+          <figure class="media">
+            <img src="img/controllo.webp" width="1000" height="740" loading="lazy" decoding="async" alt="Vetrina di uno studio Medical Udito con l'insegna Apparecchi Acustici">
+          </figure>
+          <ul class="places">
+            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Medical+Udito+Via+San+Polo+209+Brescia" target="_blank" rel="noopener"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg></span><span class="place-text"><strong>Brescia</strong><span>Via San Polo, 209, Brescia</span></span><svg class="i ext" aria-hidden="true"><use href="#i-external"/></svg></a></li>
+            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Medical+Udito+Piazza+Vielmi+3+Breno" target="_blank" rel="noopener"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg></span><span class="place-text"><strong>Breno</strong><span>Piazza Vielmi, 3, Breno</span></span><svg class="i ext" aria-hidden="true"><use href="#i-external"/></svg></a></li>
+            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Medical+Udito+Via+Marta+Tana+2+Castiglione+delle+Stiviere" target="_blank" rel="noopener"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg></span><span class="place-text"><strong>Castiglione</strong><span>Via Marta Tana, 2, Castiglione</span></span><svg class="i ext" aria-hidden="true"><use href="#i-external"/></svg></a></li>
+            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Medical+Udito+Via+Gian+Battista+Rota+2+Chiari" target="_blank" rel="noopener"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg></span><span class="place-text"><strong>Chiari</strong><span>Via Gian Battista Rota, 2, Chiari</span></span><svg class="i ext" aria-hidden="true"><use href="#i-external"/></svg></a></li>
+            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Medical+Udito+Via+Fabio+Filzi+11%2FM+Gardone+Val+Trompia" target="_blank" rel="noopener"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg></span><span class="place-text"><strong>Gardone</strong><span>Via Fabio Filzi, 11/M, Gardone</span></span><svg class="i ext" aria-hidden="true"><use href="#i-external"/></svg></a></li>
+            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Medical+Udito+Piazza+Italia+6+Manerbio" target="_blank" rel="noopener"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg></span><span class="place-text"><strong>Manerbio</strong><span>Piazza Italia, 6, Manerbio (BS)</span></span><svg class="i ext" aria-hidden="true"><use href="#i-external"/></svg></a></li>
+          </ul>
+        </div>
+        <div class="section-cta">
+          <a class="btn btn-primary btn-block-m" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">
+            Prenota il tuo appuntamento gratuito
+            <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="final" aria-labelledby="modulo-title">
+      <div class="wrap">
+        <div class="final-card">
+          <svg class="final-rings" viewBox="0 0 200 200" aria-hidden="true"><circle cx="200" cy="0" r="50"/><circle cx="200" cy="0" r="90"/><circle cx="200" cy="0" r="130"/><circle cx="200" cy="0" r="170"/></svg>
+          <span class="final-ico"><svg class="i" aria-hidden="true"><use href="#i-form"/></svg></span>
+          <h2 id="modulo-title">Compila il modulo per richiedere il tuo appuntamento gratuito</h2>
+          <p class="final-offer">Per tutto il mese, il test dell'udito è <strong>GRATUITO</strong></p>
+          <p class="final-note">Il modulo si apre sulla pagina ufficiale Medical Udito: ti chiederà nome e cognome, numero di telefono e lo studio che preferisci.</p>
+          <a class="btn btn-light btn-lg btn-block-m" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">
+            Compila il modulo
+            <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
-    <div class="wrap">
-      <img class="logo-white" src="img/logo-bianco.webp" width="525" height="105" alt="Medical Udito" loading="lazy">
-      <p>Questo sito non fa parte di Facebook o Facebook Inc. Inoltre questo sito NON è approvato da Facebook in alcun modo. FACEBOOK è un marchio registrato di FACEBOOK, Inc</p>
-      <p><strong>Copyright © Centopercento Terapista - www.centopercentoperapista.it</strong></p>
-      <p class="legal">P.iva 04321080162</p>
-      <div class="footer-links">
-        <a href="https://www.centopercentoterapista.com/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a>
-        <a href="https://www.iubenda.com/privacy-policy/97294584/cookie-policy" target="_blank" rel="noopener">Cookie Policy</a>
+    <div class="wrap footer-grid">
+      <div>
+        <img class="footer-logo" src="img/logo-bianco.webp" width="525" height="105" loading="lazy" decoding="async" alt="Centopercento Terapista">
+        <p>Questo sito non fa parte di Facebook o Facebook Inc. Inoltre questo sito NON è approvato da Facebook in alcun modo. FACEBOOK è un marchio registrato di FACEBOOK, Inc</p>
       </div>
-      <p class="legal">Noi usiamo i cookies e altre tecniche di tracciamento per migliorare la tua esperienza di navigazione nel nostro sito, per mostrarti contenuti personalizzati e annunci mirati, per analizzare il traffico sul nostro sito, e per capire da dove arrivano i nostri visitatori.</p>
+      <div>
+        <p class="copy"><strong>Copyright © Centopercento Terapista - www.centopercentoperapista.it</strong></p>
+        <p>P.iva 04321080162</p>
+        <nav class="footer-links" aria-label="Note legali">
+          <a href="https://www.centopercentoterapista.com/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a>
+          <a href="https://www.iubenda.com/privacy-policy/97294584/cookie-policy" target="_blank" rel="noopener">Cookie Policy</a>
+        </nav>
+        <p class="legal">Noi usiamo i cookies e altre tecniche di tracciamento per migliorare la tua esperienza di navigazione nel nostro sito, per mostrarti contenuti personalizzati e annunci mirati, per analizzare il traffico sul nostro sito, e per capire da dove arrivano i nostri visitatori.</p>
+      </div>
     </div>
   </footer>
 
-  <div class="sticky">
-    <a class="btn btn-block" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">PRENOTA IL TUO TEST GRATUITO</a>
+  <div class="sticky-cta">
+    <a class="btn btn-primary btn-block" href="https://www.mioportale.com/medical-udito-ats-bonus/#lp-pom-block-248">
+      Prenota il tuo test gratuito
+      <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>
+    </a>
   </div>
 </body>
 </html>
