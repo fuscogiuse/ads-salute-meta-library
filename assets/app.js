@@ -1,5 +1,5 @@
-/* Parametri: q, cat, tema, angolo, longevo=si|no, formato=video|image|carousel,
-   ordine=recenti|vecchie|longevi|nome. Scheda: #ad-<id> */
+/* Filtri in query: q, cat, tema, angolo, formato, longevo=si, ordine.
+   Scheda: #ad-<id>  Immagine intera: #foto-<id> */
 (function () {
   "use strict";
 
@@ -11,7 +11,6 @@
     ["shiatsu", "Shiatsu"],
     ["ottico", "Ottico"]
   ];
-
   var THEME_ORDER = [
     "Offerta prima visita",
     "Dolore / sintomo specifico",
@@ -22,37 +21,60 @@
     "Tecnologia e innovazione",
     "Benessere olistico"
   ];
-
   var MEDIA = { video: "Video", image: "Immagine", carousel: "Carosello" };
-  var SORTS = {
-    recenti: "Data: più recenti",
-    vecchie: "Data: più vecchie",
-    longevi: "Longevi prima",
-    nome: "Inserzionista A–Z"
-  };
+  var SORTS = { recenti: 1, vecchie: 1, longevi: 1, nome: 1 };
   var MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
   var MON = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+  var CTA = {
+    "learn more": "Scopri di più",
+    "send message": "Invia messaggio",
+    "send whatsapp message": "WhatsApp",
+    "visit instagram profile": "Profilo Instagram",
+    "see details": "Vedi dettagli",
+    "apply now": "Candidati",
+    "call now": "Chiama ora",
+    "contact us": "Contattaci",
+    "get directions": "Indicazioni",
+    "get offer": "Ottieni offerta",
+    "book now": "Prenota",
+    "sign up": "Iscriviti"
+  };
 
   var state = { q: "", cat: "", tema: "", angolo: "", longevo: "", formato: "", ordine: "recenti" };
   var ads = [];
   var byId = new Map();
-  var openId = "";
   var lastFocus = null;
   var searchTimer = 0;
+  var scale = 1;
+  var tx = 0;
+  var ty = 0;
+  var pointers = new Map();
+  var gesture = null;
+  var lastPointer = "";
+  var suppressClick = false;
 
   var grid = document.getElementById("grid");
   var countEl = document.getElementById("count");
-  var sheetCount = document.getElementById("sheet-count");
+  var panelCount = document.getElementById("panel-count");
   var activeEl = document.getElementById("active");
   var qEl = document.getElementById("q");
   var ordineEl = document.getElementById("ordine");
   var temaEl = document.getElementById("tema");
   var angoloEl = document.getElementById("angolo");
-  var filters = document.getElementById("filters");
+  var longevoEl = document.getElementById("longevo");
+  var filtriBtn = document.getElementById("filtri-btn");
+  var panel = document.getElementById("panel");
   var backdrop = document.getElementById("backdrop");
-  var toggle = document.getElementById("filter-toggle");
-  var dlg = document.getElementById("detail");
-  var mobileMq = window.matchMedia("(max-width: 899px)");
+  var detail = document.getElementById("detail");
+  var detailBody = document.getElementById("detail-body");
+  var detailTitle = document.getElementById("detail-title");
+  var viewer = document.getElementById("viewer");
+  var vimg = document.getElementById("vimg");
+  var vstage = document.getElementById("vstage");
+  var vcount = document.getElementById("vcount");
+  var vprev = document.getElementById("vprev");
+  var vnext = document.getElementById("vnext");
+  var mobileMq = window.matchMedia("(max-width: 799px)");
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -64,6 +86,10 @@
     return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 
+  function text(v) {
+    return v && String(v).trim() ? String(v).trim() : "";
+  }
+
   function catLabel(key) {
     for (var i = 0; i < CATS.length; i++) if (CATS[i][0] === key) return CATS[i][1];
     return key || "Categoria mancante";
@@ -71,6 +97,22 @@
 
   function mediaLabel(t) {
     return MEDIA[t] || (t ? String(t) : "Mancante");
+  }
+
+  function ctaLabel(raw) {
+    var t = text(raw);
+    if (!t) return "";
+    return CTA[t.toLowerCase()] || t;
+  }
+
+  function initial(name) {
+    var m = String(name || "").match(/[A-Za-zÀ-ÿ]/);
+    return m ? m[0].toUpperCase() : "?";
+  }
+
+  function isStory(ad) {
+    var s = ad.best_image_size || [1, 1];
+    return s[1] / s[0] >= 1.6;
   }
 
   function parseStarted(s) {
@@ -89,12 +131,14 @@
 
   function dateLabel(ad) {
     if (ad._t != null) return fmtDate(ad._t);
-    var raw = (ad.started_running || "").trim();
-    return raw || "Data mancante";
+    return text(ad.started_running) || "Data mancante";
   }
 
-  function textOrEmpty(v) {
-    return v && String(v).trim() ? String(v).trim() : "";
+  function readHash() {
+    var m = /^#(ad|foto)-(.+)$/.exec(location.hash);
+    if (!m) return { type: "", id: "" };
+    try { return { type: m[1], id: decodeURIComponent(m[2]) }; }
+    catch (e) { return { type: "", id: "" }; }
   }
 
   function readUrl() {
@@ -103,8 +147,7 @@
     state.cat = p.get("cat") || "";
     state.tema = p.get("tema") || "";
     state.angolo = p.get("angolo") || "";
-    var lon = p.get("longevo") || "";
-    state.longevo = lon === "si" || lon === "no" ? lon : "";
+    state.longevo = p.get("longevo") === "si" ? "si" : "";
     var fmt = p.get("formato") || "";
     state.formato = MEDIA[fmt] ? fmt : "";
     var ord = p.get("ordine") || "recenti";
@@ -125,9 +168,10 @@
     history.replaceState(history.state, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
   }
 
-  function reflectControls() {
+  function reflect() {
     qEl.value = state.q;
     ordineEl.value = state.ordine;
+    longevoEl.checked = state.longevo === "si";
     document.querySelectorAll("[data-chip]").forEach(function (btn) {
       btn.setAttribute("aria-pressed", String(btn.dataset.value === state[btn.dataset.chip]));
     });
@@ -135,8 +179,7 @@
     if ([].some.call(angoloEl.options, function (o) { return o.value === state.angolo; })) angoloEl.value = state.angolo;
   }
 
-  function fillSelect(el, values) {
-    var current = el === temaEl ? state.tema : state.angolo;
+  function fillSelect(el, values, current) {
     el.replaceChildren();
     var all = document.createElement("option");
     all.value = "";
@@ -148,30 +191,14 @@
       o.textContent = v;
       el.appendChild(o);
     });
-    if (values.indexOf(current) === -1) {
-      if (el === temaEl) state.tema = "";
-      else state.angolo = "";
-      current = "";
-    }
-    el.value = current;
+    el.value = values.indexOf(current) === -1 ? "" : current;
+    return el.value;
   }
 
   function enrich(ad) {
     ad._t = parseStarted(ad.started_running);
     ad._hay = norm([
-      ad.advertiser_name,
-      ad.primary_text,
-      ad.headline,
-      ad.description,
-      ad.cta,
-      ad.angle,
-      ad.theme,
-      ad.category,
-      catLabel(ad.category),
-      ad.why_it_works,
-      ad.why_local_ok,
-      ad.notes_on_longevity,
-      (ad.platforms || []).join(" ")
+      ad.advertiser_name, ad.primary_text, ad.headline, ad.description, ad.cta, ad.angle
     ].join("\n"));
     return ad;
   }
@@ -181,7 +208,6 @@
     if (state.tema && ad.theme !== state.tema) return false;
     if (state.angolo && ad.angle !== state.angolo) return false;
     if (state.longevo === "si" && !ad.longevity_flag) return false;
-    if (state.longevo === "no" && ad.longevity_flag) return false;
     if (state.formato && ad.media_type !== state.formato) return false;
     var tokens = norm(state.q).split(/\s+/).filter(Boolean);
     for (var i = 0; i < tokens.length; i++) {
@@ -212,8 +238,15 @@
     return byDate(a, b, -1) || byName(a, b);
   }
 
-  function risultati(n) {
-    return n === 1 ? "1 risultato" : n + " risultati";
+  function currentList() {
+    return ads.filter(matches).sort(compare);
+  }
+
+  function listIndex(id) {
+    var list = currentList();
+    var i = -1;
+    for (var n = 0; n < list.length; n++) if (String(list[n].id) === String(id)) i = n;
+    return { list: list, i: i };
   }
 
   function activeBits() {
@@ -222,103 +255,138 @@
     if (state.cat) bits.push(catLabel(state.cat));
     if (state.tema) bits.push(state.tema);
     if (state.angolo) bits.push(state.angolo);
-    if (state.longevo === "si") bits.push("Longevi");
-    if (state.longevo === "no") bits.push("Non longevi");
+    if (state.longevo === "si") bits.push("Solo longevi");
     if (state.formato) bits.push(mediaLabel(state.formato));
-    if (state.ordine !== "recenti") bits.push(SORTS[state.ordine]);
     return bits;
   }
 
-  function cardHtml(ad) {
-    var longevo = ad.longevity_flag ? '<span class="badge badge-long">Longevo</span>' : "";
-    var angle = textOrEmpty(ad.angle) || "Angolo mancante";
-    return '<button type="button" class="card cat-' + esc(ad.category) + '" data-id="' + esc(ad.id) + '">' +
-      '<span class="card-media"><img src="' + esc(ad.thumb) + '" alt="" width="480" height="360" loading="lazy" decoding="async"></span>' +
-      '<span class="card-body">' +
-      '<span class="badges"><span class="badge badge-cat">' + esc(catLabel(ad.category)) + "</span>" + longevo + "</span>" +
-      '<span class="name">' + esc(ad.advertiser_name || "Inserzionista mancante") + "</span>" +
-      '<span class="meta">' + esc(dateLabel(ad)) + " · " + esc(mediaLabel(ad.media_type)) + "</span>" +
-      '<span class="angle">' + esc(angle) + "</span>" +
-      "</span></button>";
-  }
-
   function render() {
-    var shown = ads.filter(matches).sort(compare);
+    var shown = currentList();
     if (!shown.length) {
-      grid.innerHTML = '<p class="empty">Nessuna inserzione con questi filtri.</p>';
+      grid.innerHTML = '<p class="empty">Nessuna ad con questi filtri.</p>';
     } else {
       grid.innerHTML = shown.map(cardHtml).join("");
     }
-    var text = shown.length === ads.length ? risultati(shown.length) : risultati(shown.length) + " su " + ads.length;
-    countEl.textContent = text;
-    sheetCount.textContent = text;
+    var label = shown.length === ads.length ? ads.length + " ads" : shown.length + " di " + ads.length;
+    countEl.textContent = label;
+    panelCount.textContent = label;
     var bits = activeBits();
     activeEl.hidden = bits.length === 0;
     activeEl.textContent = bits.length ? "Attivi: " + bits.join(" · ") : "";
-    var n = [state.cat, state.tema, state.angolo, state.longevo, state.formato].filter(Boolean).length + (state.q.trim() ? 1 : 0);
-    toggle.textContent = n ? "Filtri · " + n : "Filtri";
+    var extra = [state.tema, state.angolo, state.formato, state.longevo].filter(Boolean).length;
+    filtriBtn.textContent = extra ? "Filtri · " + extra : "Filtri";
+  }
+
+  function cardHtml(ad, index) {
+    var badges = '<span class="badge cat-' + esc(ad.category) + '">' + esc(catLabel(ad.category)) + "</span>";
+    if (ad.longevity_flag) badges += '<span class="badge long">Longevo</span>';
+    var loading = index < 2 ? "eager" : "lazy";
+    var pri = index === 0 ? ' fetchpriority="high"' : "";
+    var wh = ad.best_image_size || [1, 1];
+    var why = text(ad.why_short) || text(ad.why_it_works);
+    return '<article class="card">' +
+      '<div class="card-head">' +
+      '<h2 class="name">' + esc(ad.advertiser_name || "Inserzionista mancante") + "</h2>" +
+      '<button type="button" class="open" data-open="' + esc(ad.id) + '">Apri scheda</button>' +
+      "</div>" +
+      '<button type="button" class="shot" data-zoom="' + esc(ad.id) + '" aria-label="Ingrandisci la creatività di ' + esc(ad.advertiser_name) + '">' +
+      '<img src="' + esc(ad.card) + '" alt="" width="' + wh[0] + '" height="' + wh[1] + '" loading="' + loading + '" decoding="async"' + pri + ">" +
+      '<span class="zoom-label" aria-hidden="true">Ingrandisci</span>' +
+      "</button>" +
+      '<div class="card-meta">' +
+      '<p class="badges">' + badges + "</p>" +
+      '<p class="angle">' + esc(text(ad.angle) || "Angolo mancante") + "</p>" +
+      '<p class="date">' + esc(dateLabel(ad)) + " · " + esc(mediaLabel(ad.media_type)) + "</p>" +
+      '<p class="why"><span>Perché funziona</span>' + esc(why) + "</p>" +
+      "</div></article>";
+  }
+
+  function truncHTML(value, limit) {
+    var t = text(value);
+    if (!t) return "";
+    if (t.length <= limit) return "<p>" + esc(t) + "</p>";
+    var cut = t.slice(0, limit);
+    var sp = cut.lastIndexOf(" ");
+    if (sp > limit * 0.55) cut = cut.slice(0, sp);
+    return '<div class="trunc"><p class="trunc-short">' + esc(cut) + '… <button type="button" class="altro" data-altro>Altro</button></p>' +
+      '<p class="trunc-full" hidden>' + esc(t) + ' <button type="button" class="altro" data-altro>Meno</button></p></div>';
+  }
+
+  function headerHTML(ad) {
+    return '<div class="fb-top"><span class="avatar" aria-hidden="true">' + esc(initial(ad.advertiser_name)) + "</span><div>" +
+      '<strong class="fb-name">' + esc(ad.advertiser_name || "Pagina") + "</strong>" +
+      '<div class="fb-spon">Sponsorizzato</div></div></div>';
+  }
+
+  function imageButton(ad) {
+    var wh = ad.best_image_size || [1, 1];
+    return '<button type="button" class="mock-shot" data-zoom="' + esc(ad.id) + '" aria-label="Ingrandisci la creatività">' +
+      '<img data-full="' + esc(ad.best_image) + '" data-id="' + esc(ad.id) + '" src="' + esc(ad.card) + '" alt="" width="' + wh[0] + '" height="' + wh[1] + '">' +
+      "</button>";
+  }
+
+  function mockHTML(ad) {
+    var story = isStory(ad);
+    var primary = truncHTML(ad.primary_text, story ? 90 : 160);
+    var hl = text(ad.headline);
+    var desc = text(ad.description);
+    var cta = ctaLabel(ad.cta);
+    if (story) {
+      return '<p class="caption">Come appare in una storia</p><article class="story">' +
+        imageButton(ad) +
+        '<div class="story-top"><span class="avatar" aria-hidden="true">' + esc(initial(ad.advertiser_name)) + "</span><div>" +
+        "<strong>" + esc(ad.advertiser_name || "Pagina") + "</strong><div class=\"fb-spon\">Sponsorizzato</div></div></div>" +
+        '<div class="story-bottom">' + primary +
+        (hl ? '<strong class="story-hl">' + esc(hl) + "</strong>" : "") +
+        (cta ? '<span class="story-cta">' + esc(cta) + "</span>" : "") +
+        "</div></article>";
+    }
+    var bar = "";
+    if (hl || desc || cta) {
+      bar = '<div class="fb-bar"><div class="fb-links">' +
+        (hl ? "<strong>" + esc(hl) + "</strong>" : "") +
+        (desc ? "<span>" + esc(desc) + "</span>" : "") +
+        "</div>" + (cta ? '<span class="fb-cta">' + esc(cta) + "</span>" : "") + "</div>";
+    }
+    return '<p class="caption">Come appare su Facebook</p><article class="fb">' +
+      headerHTML(ad) +
+      (primary ? '<div class="fb-text">' + primary + "</div>" : "") +
+      imageButton(ad) + bar + "</article>";
   }
 
   function field(label, value) {
-    var v = textOrEmpty(value);
-    var body = v ? "<p>" + esc(v) + "</p>" : '<p class="missing">Mancante</p>';
-    return '<div class="field"><h3>' + esc(label) + "</h3>" + body + "</div>";
+    var v = text(value);
+    return '<div class="field"><h3>' + esc(label) + "</h3>" +
+      (v ? "<p>" + esc(v) + "</p>" : '<p class="missing">Mancante</p>') + "</div>";
   }
 
-  function platformBlock(ad) {
-    var list = ad.platforms || [];
-    var body = list.length
-      ? '<ul class="pills">' + list.map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("") + "</ul>"
-      : '<p class="missing">Mancante</p>';
-    return '<div class="field"><h3>Piattaforme</h3>' + body + "</div>";
-  }
-
-  function linkBlock(ad) {
-    var lib = textOrEmpty(ad.library_ad_url)
-      ? '<a class="btn" href="' + esc(ad.library_ad_url) + '" target="_blank" rel="noopener">Apri nella Libreria inserzioni</a>'
-      : '<p class="missing">Link Libreria: mancante</p>';
-    var page = textOrEmpty(ad.page_url)
-      ? '<a class="btn btn-ghost" href="' + esc(ad.page_url) + '" target="_blank" rel="noopener">Pagina inserzionista</a>'
-      : '<p class="missing">Pagina inserzionista: mancante</p>';
-    return '<div class="actions">' + lib + page + "</div>";
-  }
-
-  function wireDetail() {
-    var closeBtn = dlg.querySelector(".close");
-    if (closeBtn) closeBtn.addEventListener("click", closeDetail);
-    dlg.querySelectorAll("img").forEach(function (img) {
-      img.addEventListener("error", function () {
-        var p = document.createElement("p");
-        p.className = "missing";
-        p.textContent = "Immagine non disponibile";
-        img.replaceWith(p);
-      });
-    });
-  }
-
-  function renderDetail(ad, id) {
+  function paintDetail(id) {
+    var ad = byId.get(String(id));
+    detailTitle.textContent = ad ? ad.advertiser_name : "Scheda non trovata";
     if (!ad) {
-      dlg.innerHTML = '<div class="detail-bar"><p class="scheda">Scheda</p><button type="button" class="close">Chiudi</button></div>' +
-        '<div class="detail-body"><h2 id="detail-title">Inserzione non trovata</h2><p class="missing">Nessuna scheda con id ' + esc(id) + ".</p></div>";
-      wireDetail();
+      detailBody.innerHTML = '<div class="detail-body"><p class="missing">Nessuna scheda con questo id.</p></div>';
       return;
     }
-    var scheda = String(ad.line_num).padStart(2, "0");
-    var longevo = ad.longevity_flag ? '<span class="badge badge-long">Longevo</span>' : "";
-    var note = textOrEmpty(ad.notes_on_longevity);
-    var preview = ad.preview
-      ? '<img class="preview" src="' + esc(ad.preview) + '" alt="Anteprima libreria di ' + esc(ad.advertiser_name) + '">'
-      : '<p class="missing">Anteprima mancante</p>';
-    dlg.innerHTML =
-      '<div class="detail-bar"><p class="scheda">Scheda ' + esc(scheda) + '</p><button type="button" class="close">Chiudi</button></div>' +
-      preview +
-      '<div class="detail-body cat-' + esc(ad.category) + '">' +
-      "<h2 id=\"detail-title\">" + esc(ad.advertiser_name || "Inserzionista mancante") + "</h2>" +
-      '<p class="badges"><span class="badge badge-cat">' + esc(catLabel(ad.category)) + "</span>" +
-      longevo + '<span class="badge">' + esc(mediaLabel(ad.media_type)) + "</span></p>" +
-      '<p class="when">Attiva dal ' + esc(dateLabel(ad)) + "</p>" +
-      '<section class="insight"><h3>Perché funziona</h3>' + (textOrEmpty(ad.why_it_works) ? "<p>" + esc(ad.why_it_works) + "</p>" : '<p class="missing">Mancante</p>') + "</section>" +
-      '<section class="insight"><h3>Perché è locale</h3>' + (textOrEmpty(ad.why_local_ok) ? "<p>" + esc(ad.why_local_ok) + "</p>" : '<p class="missing">Mancante</p>') + "</section>" +
+    var platforms = ad.platforms || [];
+    var plat = platforms.length
+      ? '<ul class="pills">' + platforms.map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("") + "</ul>"
+      : '<p class="missing">Mancante</p>';
+    var lib = text(ad.library_ad_url)
+      ? '<a class="btn" href="' + esc(ad.library_ad_url) + '" target="_blank" rel="noopener">Apri nella Libreria inserzioni</a>'
+      : '<p class="missing">Link Libreria: mancante</p>';
+    var page = text(ad.page_url)
+      ? '<a class="btn btn-ghost" href="' + esc(ad.page_url) + '" target="_blank" rel="noopener">Pagina inserzionista</a>'
+      : '<p class="missing">Pagina inserzionista: mancante</p>';
+    var note = text(ad.notes_on_longevity);
+    detailBody.innerHTML = '<div class="detail-body"><div class="detail-grid"><div>' +
+      mockHTML(ad) +
+      '<button type="button" class="zoom-link" data-zoom="' + esc(ad.id) + '">Ingrandisci immagine</button>' +
+      "</div><div>" +
+      '<h3 class="info-title">Note</h3>' +
+      '<p class="date">' + esc(catLabel(ad.category)) + " · " + esc(dateLabel(ad)) + " · " + esc(mediaLabel(ad.media_type)) +
+      (ad.longevity_flag ? " · Longevo" : "") + "</p>" +
+      field("Perché funziona", ad.why_it_works) +
+      field("Perché è locale", ad.why_local_ok) +
       field("Angolo", ad.angle) +
       field("Tema", ad.theme) +
       '<div class="field"><h3>Longevità</h3><p>' + (ad.longevity_flag ? "Sì" : "No") + "</p>" +
@@ -326,127 +394,130 @@
       field("Testo primario", ad.primary_text) +
       field("Headline", ad.headline) +
       field("Descrizione", ad.description) +
-      field("Pulsante (CTA)", ad.cta) +
-      platformBlock(ad) +
-      '<div class="field"><h3>Creatività</h3>' +
-      (ad.creative_preview
-        ? '<img src="' + esc(ad.creative_preview) + '" alt="File creatività di ' + esc(ad.advertiser_name) + '" loading="lazy" decoding="async">'
-        : '<p class="missing">Mancante</p>') +
-      "</div>" +
-      linkBlock(ad) +
-      '<p class="idline">ID libreria ' + esc(ad.id) + "</p>" +
-      "</div>";
-    wireDetail();
-    dlg.scrollTop = 0;
+      field("Pulsante", ctaLabel(ad.cta)) +
+      '<div class="field"><h3>Piattaforme</h3>' + plat + "</div>" +
+      '<div class="actions">' + lib + page + "</div>" +
+      '<p class="date">Scheda ' + String(ad.line_num).padStart(2, "0") + " · ID " + esc(ad.id) + "</p>" +
+      "</div></div></div>";
+    detailBody.querySelectorAll("img[data-full]").forEach(upgradeImage);
   }
 
-  function hashId() {
-    if (!location.hash.startsWith("#ad-")) return "";
-    try { return decodeURIComponent(location.hash.slice(4)); }
-    catch (e) { return ""; }
+  function upgradeImage(img) {
+    var full = new Image();
+    var id = img.getAttribute("data-id");
+    var src = img.getAttribute("data-full");
+    full.onload = function () {
+      if (img.isConnected && img.getAttribute("data-id") === id) img.src = src;
+    };
+    full.src = src;
   }
 
-  function applyHash() {
-    var id = hashId();
-    if (!id) {
-      openId = "";
-      if (dlg.open) dlg.close();
-      if (lastFocus && typeof lastFocus.focus === "function") {
-        lastFocus.focus();
-        lastFocus = null;
-      }
+  function resetZoom() {
+    scale = 1;
+    tx = 0;
+    ty = 0;
+    applyZoom();
+  }
+
+  function applyZoom() {
+    vimg.style.transform = "translate3d(" + tx + "px," + ty + "px,0) scale(" + scale + ")";
+  }
+
+  function setScale(next) {
+    scale = Math.min(5, Math.max(1, next));
+    if (scale === 1) { tx = 0; ty = 0; }
+    applyZoom();
+  }
+
+  function paintViewer(id) {
+    var ad = byId.get(String(id));
+    var found = listIndex(id);
+    vprev.disabled = found.i <= 0;
+    vnext.disabled = found.i < 0 || found.i >= found.list.length - 1;
+    vcount.textContent = found.i >= 0 ? (found.i + 1) + " / " + found.list.length : "";
+    if (!ad) {
+      vimg.alt = "Immagine non trovata";
+      vimg.removeAttribute("src");
       return;
     }
+    resetZoom();
+    vimg.alt = "Creatività di " + (ad.advertiser_name || "");
+    vimg.src = ad.card;
+    var full = new Image();
+    full.onload = function () {
+      if (readHash().id === String(id)) vimg.src = ad.best_image;
+    };
+    full.src = ad.best_image;
+  }
+
+  function syncDialogs() {
+    var h = readHash();
     if (!ads.length) return;
-    if (id === openId && dlg.open) return;
-    openId = id;
-    renderDetail(byId.get(id) || null, id);
-    if (!dlg.open) dlg.showModal();
-    var closeBtn = dlg.querySelector(".close");
-    if (closeBtn) closeBtn.focus();
-  }
-
-  function openAd(id) {
-    if (!id) return;
-    var next = "#ad-" + encodeURIComponent(id);
-    if (location.hash !== next) {
-      lastFocus = document.activeElement;
-      history.pushState({ ad: id }, "", location.pathname + location.search + next);
-    }
-    applyHash();
-  }
-
-  function closeDetail() {
-    if (location.hash.startsWith("#ad-")) {
-      history.replaceState(null, "", location.pathname + location.search);
-    }
-    applyHash();
-  }
-
-  function syncInert() {
-    var mobile = mobileMq.matches;
-    if (!mobile) {
-      filters.classList.remove("is-open");
-      backdrop.hidden = true;
-      document.body.classList.remove("sheet-open");
-      toggle.setAttribute("aria-expanded", "false");
-      filters.inert = false;
+    if (h.type === "foto") {
+      if (detail.open) detail.close();
+      var firstV = !viewer.open;
+      paintViewer(h.id);
+      if (!viewer.open) viewer.showModal();
+      if (firstV) document.getElementById("vclose").focus();
       return;
     }
-    var open = filters.classList.contains("is-open");
-    filters.inert = !open;
-    backdrop.hidden = !open;
+    if (h.type === "ad") {
+      if (viewer.open) viewer.close();
+      var firstD = !detail.open;
+      paintDetail(h.id);
+      if (!detail.open) detail.showModal();
+      if (firstD) document.getElementById("dclose").focus();
+      return;
+    }
+    if (viewer.open) viewer.close();
+    if (detail.open) detail.close();
+    if (lastFocus && typeof lastFocus.focus === "function") {
+      lastFocus.focus();
+      lastFocus = null;
+    }
   }
 
-  function openSheet() {
-    if (!mobileMq.matches) return;
-    filters.classList.add("is-open");
-    document.body.classList.add("sheet-open");
-    toggle.setAttribute("aria-expanded", "true");
-    syncInert();
-    document.getElementById("sheet-close").focus();
+  function openView(view, id, mode) {
+    var hash = "#" + view + "-" + encodeURIComponent(id);
+    var url = location.pathname + location.search + hash;
+    if (location.hash === hash) {
+      syncDialogs();
+      return;
+    }
+    if (mode !== "replace") {
+      if (!history.state || !history.state.view) lastFocus = document.activeElement;
+      history.pushState({ view: view, id: id }, "", url);
+    } else {
+      history.replaceState({ view: view, id: id }, "", url);
+    }
+    syncDialogs();
   }
 
-  function closeSheet() {
-    filters.classList.remove("is-open");
-    document.body.classList.remove("sheet-open");
-    toggle.setAttribute("aria-expanded", "false");
-    syncInert();
+  function closeCurrent() {
+    if (history.state && history.state.view) {
+      history.back();
+      return;
+    }
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    syncDialogs();
   }
 
-  function applyAndRender() {
-    writeUrl();
-    render();
+  function stepFoto(dir) {
+    var h = readHash();
+    if (h.type !== "foto") return;
+    var found = listIndex(h.id);
+    var next = found.list[found.i + dir];
+    if (!next) return;
+    openView("foto", next.id, "replace");
   }
 
-  filters.addEventListener("click", function (e) {
-    var btn = e.target.closest("[data-chip]");
-    if (!btn) return;
-    state[btn.dataset.chip] = btn.dataset.value;
-    reflectControls();
-    applyAndRender();
-  });
-
-  temaEl.addEventListener("change", function () {
-    state.tema = temaEl.value;
-    applyAndRender();
-  });
-
-  angoloEl.addEventListener("change", function () {
-    state.angolo = angoloEl.value;
-    applyAndRender();
-  });
-
-  ordineEl.addEventListener("change", function () {
-    state.ordine = ordineEl.value;
-    applyAndRender();
-  });
-
-  qEl.addEventListener("input", function () {
-    state.q = qEl.value;
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(applyAndRender, 140);
-  });
+  function setPanel(open) {
+    panel.hidden = !open;
+    var mobile = mobileMq.matches;
+    backdrop.hidden = !open || !mobile;
+    filtriBtn.setAttribute("aria-expanded", String(open));
+    document.body.classList.toggle("panel-open", open && mobile);
+  }
 
   function resetAll() {
     state.q = "";
@@ -456,64 +527,178 @@
     state.longevo = "";
     state.formato = "";
     state.ordine = "recenti";
-    reflectControls();
-    applyAndRender();
-    qEl.focus();
+    reflect();
+    writeUrl();
+    render();
   }
 
-  document.getElementById("reset").addEventListener("click", resetAll);
-  document.getElementById("reset-sheet").addEventListener("click", resetAll);
-
-  toggle.addEventListener("click", function () {
-    if (filters.classList.contains("is-open")) closeSheet();
-    else openSheet();
-  });
-  document.getElementById("sheet-close").addEventListener("click", closeSheet);
-  backdrop.addEventListener("click", closeSheet);
-
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && filters.classList.contains("is-open") && mobileMq.matches) {
-      e.preventDefault();
-      closeSheet();
-      toggle.focus();
+  document.addEventListener("click", function (e) {
+    var zoom = e.target.closest("[data-zoom]");
+    if (zoom) {
+      openView("foto", zoom.getAttribute("data-zoom"), "push");
+      return;
+    }
+    var open = e.target.closest("[data-open]");
+    if (open) {
+      openView("ad", open.getAttribute("data-open"), "push");
+      return;
+    }
+    var altro = e.target.closest("[data-altro]");
+    if (altro) {
+      var box = altro.closest(".trunc");
+      var shortP = box.querySelector(".trunc-short");
+      var fullP = box.querySelector(".trunc-full");
+      var showFull = fullP.hidden;
+      shortP.hidden = showFull;
+      fullP.hidden = !showFull;
+      return;
+    }
+    var chip = e.target.closest("[data-chip]");
+    if (chip) {
+      state[chip.dataset.chip] = chip.dataset.value;
+      reflect();
+      writeUrl();
+      render();
     }
   });
 
+  temaEl.addEventListener("change", function () {
+    state.tema = temaEl.value;
+    writeUrl();
+    render();
+  });
+  angoloEl.addEventListener("change", function () {
+    state.angolo = angoloEl.value;
+    writeUrl();
+    render();
+  });
+  ordineEl.addEventListener("change", function () {
+    state.ordine = ordineEl.value;
+    writeUrl();
+    render();
+  });
+  longevoEl.addEventListener("change", function () {
+    state.longevo = longevoEl.checked ? "si" : "";
+    writeUrl();
+    render();
+  });
+  qEl.addEventListener("input", function () {
+    state.q = qEl.value;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () {
+      writeUrl();
+      render();
+    }, 140);
+  });
+
+  document.getElementById("azzera").addEventListener("click", resetAll);
+  document.getElementById("azzera-panel").addEventListener("click", resetAll);
+  filtriBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    setPanel(panel.hidden);
+  });
+  document.getElementById("panel-close").addEventListener("click", function () { setPanel(false); });
+  backdrop.addEventListener("click", function () { setPanel(false); });
   document.addEventListener("click", function (e) {
-    var a = e.target.closest("a[data-ad]");
-    if (!a) return;
+    if (panel.hidden) return;
+    if (e.target.closest("#panel") || e.target.closest("#filtri-btn")) return;
+    setPanel(false);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !panel.hidden && !detail.open && !viewer.open) {
+      setPanel(false);
+      filtriBtn.focus();
+    }
+    if (!viewer.open) return;
+    if (e.key === "ArrowRight") { e.preventDefault(); stepFoto(1); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); stepFoto(-1); }
+    if (e.key === "+" || e.key === "=") { e.preventDefault(); setScale(scale * 1.35); }
+    if (e.key === "-" || e.key === "_") { e.preventDefault(); setScale(scale / 1.35); }
+  });
+
+  document.getElementById("dclose").addEventListener("click", closeCurrent);
+  document.getElementById("vclose").addEventListener("click", closeCurrent);
+  vprev.addEventListener("click", function () { stepFoto(-1); });
+  vnext.addEventListener("click", function () { stepFoto(1); });
+  document.getElementById("vzin").addEventListener("click", function () { setScale(scale * 1.4); });
+  document.getElementById("vzout").addEventListener("click", function () { setScale(scale / 1.4); });
+
+  detail.addEventListener("cancel", function (e) { e.preventDefault(); closeCurrent(); });
+  viewer.addEventListener("cancel", function (e) { e.preventDefault(); closeCurrent(); });
+  detail.addEventListener("click", function (e) { if (e.target === detail) closeCurrent(); });
+  viewer.addEventListener("click", function (e) { if (e.target === viewer) closeCurrent(); });
+
+  viewer.addEventListener("wheel", function (e) {
+    if (!viewer.open) return;
     e.preventDefault();
-    openAd(a.dataset.ad);
+    setScale(scale * (e.deltaY < 0 ? 1.12 : 1 / 1.12));
+  }, { passive: false });
+
+  vstage.addEventListener("pointerdown", function (e) {
+    vstage.setPointerCapture(e.pointerId);
+    lastPointer = e.pointerType;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 1) {
+      gesture = { x: e.clientX, y: e.clientY, type: e.pointerType, tx: tx, ty: ty, scale: scale, moved: false, pinching: false };
+    } else if (pointers.size === 2 && gesture) {
+      var both = Array.from(pointers.values());
+      gesture.dist = Math.hypot(both[0].x - both[1].x, both[0].y - both[1].y);
+      gesture.scale = scale;
+      gesture.pinching = true;
+    }
   });
 
-  grid.addEventListener("click", function (e) {
-    var btn = e.target.closest(".card");
-    if (!btn) return;
-    openAd(btn.dataset.id);
+  vstage.addEventListener("pointermove", function (e) {
+    if (!pointers.has(e.pointerId) || !gesture) return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size >= 2 && gesture.dist) {
+      var both = Array.from(pointers.values());
+      var d = Math.hypot(both[0].x - both[1].x, both[0].y - both[1].y);
+      setScale(gesture.scale * (d / gesture.dist));
+      gesture.moved = true;
+      return;
+    }
+    if (pointers.size === 1 && scale > 1) {
+      tx = gesture.tx + (e.clientX - gesture.x);
+      ty = gesture.ty + (e.clientY - gesture.y);
+      gesture.panned = true;
+      applyZoom();
+    }
   });
 
-  dlg.addEventListener("cancel", function (e) {
-    e.preventDefault();
-    closeDetail();
-  });
+  function endPointer(e) {
+    pointers.delete(e.pointerId);
+    if (!gesture || pointers.size > 0) return;
+    var dx = e.clientX - gesture.x;
+    var dy = e.clientY - gesture.y;
+    if (!gesture.pinching && gesture.type === "touch" && scale === 1 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+      stepFoto(dx < 0 ? 1 : -1);
+    }
+    if (gesture.panned || gesture.pinching) suppressClick = true;
+    gesture = null;
+  }
+  vstage.addEventListener("pointerup", endPointer);
+  vstage.addEventListener("pointercancel", endPointer);
 
-  dlg.addEventListener("click", function (e) {
-    if (e.target === dlg) closeDetail();
+  vstage.addEventListener("click", function (e) {
+    if (e.target.closest("button")) return;
+    if (suppressClick) { suppressClick = false; return; }
+    if (lastPointer === "touch") return;
+    setScale(scale > 1.05 ? 1 : 2.4);
   });
 
   window.addEventListener("popstate", function () {
     readUrl();
-    reflectControls();
+    reflect();
     render();
-    applyHash();
+    syncDialogs();
+  });
+  mobileMq.addEventListener("change", function () {
+    if (!mobileMq.matches) setPanel(false);
   });
 
-  window.addEventListener("hashchange", applyHash);
-  mobileMq.addEventListener("change", syncInert);
-
   readUrl();
-  reflectControls();
-  syncInert();
+  reflect();
 
   fetch("data/ads.json")
     .then(function (res) {
@@ -531,12 +716,12 @@
       });
       var angles = Array.from(new Set(ads.map(function (a) { return a.angle; }).filter(Boolean)));
       angles.sort(function (a, b) { return a.localeCompare(b, "it", { sensitivity: "base" }); });
-      fillSelect(temaEl, themes);
-      fillSelect(angoloEl, angles);
-      reflectControls();
+      state.tema = fillSelect(temaEl, themes, state.tema);
+      state.angolo = fillSelect(angoloEl, angles, state.angolo);
+      reflect();
       writeUrl();
       render();
-      applyHash();
+      syncDialogs();
     })
     .catch(function () {
       grid.innerHTML = '<p class="empty">Non riesco a caricare i dati. Ricarica la pagina.</p>';
