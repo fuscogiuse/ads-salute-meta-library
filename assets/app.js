@@ -277,28 +277,52 @@
     filtriBtn.textContent = extra ? "Filtri · " + extra : "Filtri";
   }
 
+  function videoFile(ad) {
+    return ad.media && ad.media.video ? ad.media.video : "";
+  }
+
+  function cardFiles(ad) {
+    return ad.media && ad.media.cards && ad.media.cards.length ? ad.media.cards : [];
+  }
+
+  function videoMissing(ad) {
+    return ad.media_type === "video" && !videoFile(ad);
+  }
+
   function cardHtml(ad, index) {
     var badges = '<span class="badge cat-' + esc(ad.category) + '">' + esc(catLabel(ad.category)) + "</span>";
     if (ad.longevity_flag) badges += '<span class="badge long">Longevo</span>';
-    var loading = index < 2 ? "eager" : "lazy";
-    var pri = index === 0 ? ' fetchpriority="high"' : "";
-    var wh = ad.best_image_size || [1, 1];
     var why = text(ad.why_short) || text(ad.why_it_works);
     return '<article class="card">' +
       '<div class="card-head">' +
       '<h2 class="name">' + esc(ad.advertiser_name || "Inserzionista mancante") + "</h2>" +
       '<button type="button" class="open" data-open="' + esc(ad.id) + '">Apri scheda</button>' +
       "</div>" +
-      '<button type="button" class="shot" data-zoom="' + esc(ad.id) + '" aria-label="Ingrandisci la creatività di ' + esc(ad.advertiser_name) + '">' +
-      '<img src="' + esc(ad.card) + '" alt="" width="' + wh[0] + '" height="' + wh[1] + '" loading="' + loading + '" decoding="async"' + pri + ">" +
-      '<span class="zoom-label" aria-hidden="true">Ingrandisci</span>' +
-      "</button>" +
+      creativeCard(ad, index) +
+      (videoMissing(ad) ? '<p class="unavail">Video non disponibile su Meta</p>' : "") +
       '<div class="card-meta">' +
       '<p class="badges">' + badges + "</p>" +
       '<p class="angle">' + esc(text(ad.angle) || "Angolo mancante") + "</p>" +
       '<p class="date">' + esc(dateLabel(ad)) + " · " + esc(mediaLabel(ad.media_type)) + "</p>" +
       '<p class="why"><span>Perché funziona</span>' + esc(why) + "</p>" +
       "</div></article>";
+  }
+
+  function creativeCard(ad, index) {
+    var wh = ad.best_image_size || [1, 1];
+    var loading = index < 2 ? "eager" : "lazy";
+    var pri = index === 0 ? ' fetchpriority="high"' : "";
+    if (videoFile(ad)) {
+      return '<div class="vidbox">' +
+        '<img class="poster" src="' + esc(ad.card) + '" alt="" width="' + wh[0] + '" height="' + wh[1] + '" loading="' + loading + '" decoding="async"' + pri + ">" +
+        '<video controls playsinline preload="none" poster="' + esc(ad.card) + '" data-full="' + esc(ad.best_image) + '" src="' + esc(videoFile(ad)) + '"></video>' +
+        '<button type="button" class="play-btn" aria-label="Riproduci il video di ' + esc(ad.advertiser_name) + '"><span aria-hidden="true">▶</span></button>' +
+        '<span class="vbadge">Video</span></div>';
+    }
+    var extra = cardFiles(ad).length > 1 ? '<span class="vbadge">Carosello</span>' : "";
+    return '<button type="button" class="shot" data-zoom="' + esc(ad.id) + '" aria-label="Ingrandisci la creatività di ' + esc(ad.advertiser_name) + '">' +
+      '<img src="' + esc(ad.card) + '" alt="" width="' + wh[0] + '" height="' + wh[1] + '" loading="' + loading + '" decoding="async"' + pri + ">" +
+      '<span class="zoom-label" aria-hidden="true">Ingrandisci</span>' + extra + "</button>";
   }
 
   function truncHTML(value, limit) {
@@ -325,21 +349,46 @@
       "</button>";
   }
 
+  function videoBox(ad, mode) {
+    return '<div class="vidbox vidbox-' + mode + '">' +
+      '<video controls playsinline preload="none" poster="' + esc(ad.best_image) + '" src="' + esc(videoFile(ad)) + '"></video>' +
+      '<button type="button" class="play-btn" aria-label="Riproduci il video"><span aria-hidden="true">▶</span></button></div>';
+  }
+
+  function carouselHTML(cards) {
+    var slides = cards.map(function (src, i) {
+      return '<div class="car-slide"><img src="' + esc(src) + '" alt="Card ' + (i + 1) + " di " + cards.length + '" loading="' + (i === 0 ? "eager" : "lazy") + '" decoding="async" draggable="false"></div>';
+    }).join("");
+    return '<div class="carousel"><div class="car-track">' + slides + "</div>" +
+      '<button type="button" class="car-nav car-prev" aria-label="Card precedente">‹</button>' +
+      '<button type="button" class="car-nav car-next" aria-label="Card successiva">›</button>' +
+      '<p class="car-count">1 / ' + cards.length + "</p></div>";
+  }
+
+  function creativeMock(ad, story) {
+    if (videoFile(ad)) return videoBox(ad, story ? "story" : "detail");
+    var cards = cardFiles(ad);
+    if (ad.media_type === "carousel" && cards.length) return carouselHTML(cards);
+    return imageButton(ad);
+  }
+
   function mockHTML(ad) {
-    var story = isStory(ad);
+    var cards = cardFiles(ad);
+    var story = !(ad.media_type === "carousel" && cards.length) && isStory(ad);
     var primary = truncHTML(ad.primary_text, story ? 90 : 160);
     var hl = text(ad.headline);
     var desc = text(ad.description);
     var cta = ctaLabel(ad.cta);
+    var note = videoMissing(ad) ? '<p class="unavail">Video non disponibile su Meta</p>' : "";
     if (story) {
       return '<p class="caption">Come appare in una storia</p><article class="story">' +
-        imageButton(ad) +
+        creativeMock(ad, true) +
         '<div class="story-top"><span class="avatar" aria-hidden="true">' + esc(initial(ad.advertiser_name)) + "</span><div>" +
         "<strong>" + esc(ad.advertiser_name || "Pagina") + "</strong><div class=\"fb-spon\">Sponsorizzato</div></div></div>" +
         '<div class="story-bottom">' + primary +
         (hl ? '<strong class="story-hl">' + esc(hl) + "</strong>" : "") +
         (cta ? '<span class="story-cta">' + esc(cta) + "</span>" : "") +
-        "</div></article>";
+        "</div></article>" + note;
     }
     var bar = "";
     if (hl || desc || cta) {
@@ -351,7 +400,56 @@
     return '<p class="caption">Come appare su Facebook</p><article class="fb">' +
       headerHTML(ad) +
       (primary ? '<div class="fb-text">' + primary + "</div>" : "") +
-      imageButton(ad) + bar + "</article>";
+      creativeMock(ad, false) + bar + "</article>" + note;
+  }
+
+  function downloadHTML(ad) {
+    var files = [];
+    if (videoFile(ad)) files.push(videoFile(ad));
+    else if (cardFiles(ad).length) files = cardFiles(ad).slice();
+    else if (ad.best_image) files.push(ad.best_image);
+    return files.map(function (href, i) {
+      var label = files.length > 1 ? "Scarica originale " + (i + 1) : "Scarica originale";
+      return '<a class="btn btn-ghost" href="' + esc(href) + '" download>' + label + "</a>";
+    }).join("");
+  }
+
+  function bindCarousel(root) {
+    var track = root.querySelector(".car-track");
+    var label = root.querySelector(".car-count");
+    var n = track.children.length;
+    var drag = null;
+    function update() {
+      var w = track.clientWidth || 1;
+      var i = Math.round(track.scrollLeft / w);
+      if (i < 0) i = 0;
+      if (i > n - 1) i = n - 1;
+      label.textContent = (i + 1) + " / " + n;
+    }
+    track.addEventListener("scroll", update, { passive: true });
+    track.addEventListener("pointerdown", function (e) {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      drag = { x: e.clientX, left: track.scrollLeft, id: e.pointerId, moved: false };
+    });
+    track.addEventListener("pointermove", function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var dx = e.clientX - drag.x;
+      if (Math.abs(dx) < 4) return;
+      drag.moved = true;
+      track.setPointerCapture(e.pointerId);
+      track.scrollLeft = drag.left - dx;
+    });
+    function endDrag(e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      if (drag.moved) {
+        var w = track.clientWidth || 1;
+        var i = Math.round(track.scrollLeft / w);
+        track.scrollTo({ left: i * w, behavior: "smooth" });
+      }
+      drag = null;
+    }
+    track.addEventListener("pointerup", endDrag);
+    track.addEventListener("pointercancel", endDrag);
   }
 
   function field(label, value) {
@@ -396,10 +494,11 @@
       field("Descrizione", ad.description) +
       field("Pulsante", ctaLabel(ad.cta)) +
       '<div class="field"><h3>Piattaforme</h3>' + plat + "</div>" +
-      '<div class="actions">' + lib + page + "</div>" +
+      '<div class="actions">' + downloadHTML(ad) + lib + page + "</div>" +
       '<p class="date">Scheda ' + String(ad.line_num).padStart(2, "0") + " · ID " + esc(ad.id) + "</p>" +
       "</div></div></div>";
     detailBody.querySelectorAll("img[data-full]").forEach(upgradeImage);
+    detailBody.querySelectorAll(".carousel").forEach(bindCarousel);
   }
 
   function upgradeImage(img) {
@@ -478,6 +577,7 @@
   }
 
   function openView(view, id, mode) {
+    pauseOthers(null);
     var hash = "#" + view + "-" + encodeURIComponent(id);
     var url = location.pathname + location.search + hash;
     if (location.hash === hash) {
@@ -494,6 +594,7 @@
   }
 
   function closeCurrent() {
+    pauseOthers(null);
     if (history.state && history.state.view) {
       history.back();
       return;
@@ -532,7 +633,49 @@
     render();
   }
 
+  function pauseOthers(except) {
+    document.querySelectorAll("video").forEach(function (v) {
+      if (v !== except && !v.paused) v.pause();
+    });
+  }
+
+  document.addEventListener("play", function (e) {
+    var video = e.target;
+    if (!video || video.tagName !== "VIDEO") return;
+    pauseOthers(video);
+    var box = video.closest(".vidbox");
+    if (box) box.classList.add("is-playing");
+  }, true);
+
+  function showPlay(e) {
+    var video = e.target;
+    if (!video || video.tagName !== "VIDEO") return;
+    var box = video.closest(".vidbox");
+    if (box) box.classList.remove("is-playing");
+  }
+
+  document.addEventListener("pause", showPlay, true);
+  document.addEventListener("ended", showPlay, true);
+
   document.addEventListener("click", function (e) {
+    var playBtn = e.target.closest(".play-btn");
+    if (playBtn) {
+      var video = playBtn.parentElement.querySelector("video");
+      if (video) {
+        var full = video.getAttribute("data-full");
+        if (full) video.poster = full;
+        var pending = video.play();
+        if (pending && pending.catch) pending.catch(function () {});
+      }
+      return;
+    }
+    var carBtn = e.target.closest(".car-nav");
+    if (carBtn) {
+      var track = carBtn.closest(".carousel").querySelector(".car-track");
+      var dir = carBtn.classList.contains("car-next") ? 1 : -1;
+      track.scrollBy({ left: dir * track.clientWidth, behavior: "smooth" });
+      return;
+    }
     var zoom = e.target.closest("[data-zoom]");
     if (zoom) {
       openView("foto", zoom.getAttribute("data-zoom"), "push");
